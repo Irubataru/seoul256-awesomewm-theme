@@ -19,6 +19,25 @@ theme.confdir = homedir .. "/.config/awesome/seoul256-awesomewm-theme"
 theme.icondir = theme.confdir .. "/icons"
 theme.font    = "Roboto Mono 9"
 
+theme.config = {
+  taglist_buttons = nil,
+  tasklist_buttons = nil
+}
+
+function theme.setup(config)
+  if type(config) == 'table' then
+    for k, v in pairs(config) do
+      if type(k) == 'number' then
+        table.insert(theme.config, v)
+      else
+        theme.config[k] = v
+      end
+    end
+  else
+    table.insert(theme.config, arg)
+  end
+end
+
 -- {{{ Colours
 
 local colors = {}
@@ -309,10 +328,19 @@ function theme.at_screen_connect(s)
     awful.button({ }, 5, function () awful.layout.inc(-1) end)))
 
   -- Create a taglist widget
-  s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
+  s.mytaglist = awful.widget.taglist {
+    screen  = s,
+    filter  = awful.widget.taglist.filter.all,
+    buttons = theme.config.taglist_buttons
+  }
 
   -- Create a tasklist widget
-  s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons)
+  -- Create a tasklist widget
+  s.mytasklist = awful.widget.tasklist {
+    screen  = s,
+    filter  = awful.widget.tasklist.filter.currenttags,
+    buttons = theme.config.tasklist_buttons
+  }
 
   -- Create the wibox
   s.mywibox = awful.wibar({ position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal })
